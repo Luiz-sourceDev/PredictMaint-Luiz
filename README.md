@@ -192,7 +192,7 @@ O projeto esta sem Tailwind e sem Bootstrap por padrao. Cada aluno pode instalar
 
 ## Banco de Dados
 
-O arquivo `database/init/01-schema.sql` cria a base inicial quando o container MySQL sobe pela primeira vez.
+Os arquivos `database/init/01-schema.sql` (estrutura) e `02-seed.sql` (dados de exemplo) criam o banco `predictmaint` quando o container MySQL sobe pela primeira vez. Detalhes, DER e logins de teste em [`database/README.md`](database/README.md).
 
 Para reiniciar o banco local do zero:
 
