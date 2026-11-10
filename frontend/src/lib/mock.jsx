@@ -23,8 +23,9 @@ import { calcOrcamento } from './calc';
 
   /* Logins de DEMONSTRAÇÃO (somente no mock). Com a API real, a senha é validada no backend. */
   const USUARIOS = [
-    { nome: 'Administrador Mantech', email: 'admin@mantech.com.br', matricula: 'adm001', senha: 'Mantech@2026', perfis: ['gestor', 'tecnico', 'funcionario'] },
-    { nome: 'Ana Souza', email: 'funcionario@mantech.com.br', matricula: 'fun001', senha: 'Func@2026', perfis: ['funcionario'], setor: 'Estamparia' }
+    { nome: 'Administrador Mantech', email: 'admin@mantech.com.br', matricula: 'adm001', senha: 'senai@123', perfis: ['gestor', 'tecnico', 'funcionario'] },
+    { nome: 'Ana Souza', email: 'funcionario@mantech.com.br', matricula: 'fun001', senha: 'senai@123', perfis: ['funcionario'], setor: 'Estamparia' },
+    { nome: 'Carlos Lima', email: 'tecnico@mantech.com.br', matricula: 'tec001', senha: 'senai@123', perfis: ['tecnico'] }
   ];
 
   function seed() {
@@ -143,13 +144,41 @@ import { calcOrcamento } from './calc';
   const R = [], on = (m, p, f) => R.push([m, new RegExp('^' + p.replace(/:(\w+)/g, '([^/]+)') + '$'), f]);
 
   on('POST', '/auth/login', (_, __, b) => {
-    const email = (b.usuario || '').trim().toLowerCase(), u = USUARIOS.find(x => x.email === email || x.matricula === email);
+    const email = (b.usuario || '').trim().toLowerCase(), u = usuariosDemo().find(x => x.ativo !== false && (x.email === email || x.matricula === email));
     if (!email || !b.senha) throw new Error('Preencha e-mail (ou matrícula) e senha.');
     if (!u || u.senha !== b.senha) throw new Error('E-mail ou senha incorretos.');
     if (!u.perfis.includes(b.perfil)) throw new Error('Este usuário não tem acesso ao perfil ' + b.perfil + '.');
     return { token: 'token-de-demonstracao', usuario: { nome: u.nome, email: u.email, perfil: b.perfil, setor: b.perfil === 'funcionario' ? (u.setor || 'Estamparia') : null } };
   });
   on('POST', '/auth/recuperar', () => ({ ok: true }));
+
+  /* Usuários e avisos (demonstração): ficam no localStorage junto com o resto */
+  const usuariosDemo = () => { if (!db.usuarios) { db.usuarios = USUARIOS.map((u, i) => ({ id: i + 1, ativo: true, setor: null, ...u })); db.avisos = []; } return db.usuarios; };
+  const semSenha = ({ senha, ...u }) => u;
+  const eu = () => { try { return JSON.parse(localStorage.getItem('pm_user')) || {}; } catch { return {}; } };
+  on('GET', '/setores', () => [...new Set(db.maquinas.map(m => m.setor))].sort());
+  on('GET', '/users', (_, P) => usuariosDemo().filter(u => (!P.q || (u.nome + u.email + u.matricula).toLowerCase().includes(P.q.toLowerCase())) && (!P.perfil || u.perfis.includes(P.perfil)) && (P.ativo === undefined || String(+u.ativo) === P.ativo)).map(semSenha));
+  on('POST', '/users', (_, __, b) => {
+    const L = usuariosDemo();
+    if (!b.nome || !b.email || !b.matricula) throw new Error('Informe nome, e-mail e matrícula.');
+    if (L.some(u => u.email === b.email.toLowerCase() || u.matricula === b.matricula)) throw new Error('Já existe um registro com esses dados.');
+    if ((b.perfis || []).includes('funcionario') && !b.setor) throw new Error('Escolha o setor do funcionário.');
+    const u = { id: Math.max(...L.map(x => x.id)) + 1, nome: b.nome, email: b.email.toLowerCase(), matricula: b.matricula, senha: b.senha || 'senai@123', perfis: b.perfis, setor: b.setor || null, ativo: true };
+    L.push(u); save(); return semSenha(u);
+  });
+  on('PUT', '/users/:id', ([id], _, b) => { const u = usuariosDemo().find(x => x.id === +id); if (!u) throw new Error('Usuário não encontrado.'); Object.assign(u, Object.fromEntries(Object.entries(b).filter(([, v]) => v !== undefined))); save(); return semSenha(u); });
+  on('DELETE', '/users/:id', ([id]) => { const u = usuariosDemo().find(x => x.id === +id); if (!u) throw new Error('Usuário não encontrado.'); if (u.email === eu().email) throw new Error('Você não pode desativar o seu próprio usuário.'); u.ativo = false; save(); return { mensagem: 'Usuário desativado.' }; });
+  const avisoOut = a => ({ ...a, para: (usuariosDemo().find(u => u.id === a.dest) || {}).nome });
+  on('GET', '/notificacoes', () => { usuariosDemo(); const me = usuariosDemo().find(u => u.email === eu().email); const itens = db.avisos.filter(a => me && a.dest === me.id).map(avisoOut); return { naoLidas: itens.filter(a => !a.lida).length, itens }; });
+  on('GET', '/notificacoes/enviadas', (_, P) => { usuariosDemo(); return db.avisos.filter(a => !P.usuario || a.dest === +P.usuario).map(avisoOut); });
+  on('POST', '/notificacoes', (_, __, b) => {
+    usuariosDemo(); if (!b.titulo) throw new Error('Escreva o título do alerta.');
+    const d = new Date(), m = db.maquinas.find(x => x.id === b.maquina);
+    const a = { id: Date.now(), dest: +b.destinatario, prioridade: b.prioridade === 'urgente' ? 'urgente' : 'normal', titulo: b.titulo, mensagem: b.mensagem || '', maquina: m ? m.id : null, maquinaNome: m ? m.nome : null, de: eu().nome || 'Gestor', quando: dm(d) + ' ' + hm(d), lida: false };
+    db.avisos.unshift(a); save(); return avisoOut(a);
+  });
+  on('PATCH', '/notificacoes/lidas', () => { usuariosDemo(); const me = usuariosDemo().find(u => u.email === eu().email); db.avisos.forEach(a => { if (me && a.dest === me.id) a.lida = true; }); save(); return { ok: true }; });
+  on('PATCH', '/notificacoes/:id/lida', ([id]) => { usuariosDemo(); const a = db.avisos.find(x => x.id === +id); if (a) a.lida = true; save(); return { ok: true }; });
   on('GET', '/busca', (_, P) => {
     const t = (P.q || '').toLowerCase(), out = [];
     db.maquinas.filter(m => (m.id + m.nome).toLowerCase().includes(t)).forEach(m => out.push({ tipo: 'Máquina', titulo: m.id + ' · ' + m.nome, sub: m.setor, href: '/maquinas?id=' + m.id }));

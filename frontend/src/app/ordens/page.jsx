@@ -37,7 +37,7 @@ export default function Ordens() {
   }
   const o = det && (l.data || []).find(x => x.id === det);
   return (
-    <Painel titulo="Ordens de serviço" acao={{ label: 'Nova OS', onClick: () => setNova(true) }}>
+    <Painel titulo="Ordens de serviço" acao={{ soGestor: true, label: 'Nova OS', onClick: () => setNova(true) }}>
       <div className="pm-card mb-3"><div className="row g-3 align-items-end">
         <div className="col-md-3"><label className="form-label" htmlFor="f-e">Responsável</label><select id="f-e" className="form-select" value={fe} onChange={e => setFe(e.target.value)}><option value="">Todas as equipes</option>{EQUIPES.map(e => <option key={e}>{e}</option>)}</select></div>
         <div className="col-md-3"><label className="form-label" htmlFor="f-p">Prioridade</label><select id="f-p" className="form-select" value={fp} onChange={e => setFp(e.target.value)}><option value="">Todas</option><option value="alta">Alta</option><option value="media">Média</option><option value="baixa">Baixa</option></select></div>

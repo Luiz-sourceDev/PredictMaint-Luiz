@@ -1,0 +1,41 @@
+PREDICTMAINT - CONFIGURACAO COMPLETA DO AMBIENTE
+Equipe Mantech - Projeto Integrador SENAI
+==================================================
+
+O QUE ESTE INSTALADOR FAZ
+1. Instala o que faltar no PC: Git, Docker Desktop, VS Code, DBeaver e Node.js.
+2. Baixa a versao mais nova do projeto do GitHub (branch feat/banco-completo)
+   em C:\Users\<seu usuario>\projetos-senai\PredictMaint-Luiz
+3. Sobe o banco (MySQL 8.4), a API e o site no Docker Desktop.
+4. Deixa todos os logins com a senha senai@123.
+5. Cria os atalhos "Iniciar PredictMaint" e "Parar PredictMaint" na Area de Trabalho,
+   a conexao "PredictMaint (Docker)" no DBeaver e abre o projeto no VS Code.
+
+COMO USAR
+1. Deixe os 3 arquivos na mesma pasta.
+2. De dois cliques em Configurar-Ambiente-PredictMaint.bat
+3. Se o Windows pedir permissao (Docker Desktop), clique em Sim.
+4. Se ele avisar que instalou o Docker Desktop: reinicie o PC, abra o Docker Desktop,
+   aceite os termos, espere "Engine running" e rode o instalador de novo.
+Pode rodar quantas vezes quiser: ele pula o que ja esta pronto e atualiza o projeto.
+
+ACESSOS (senha de todos: senai@123)
+  Site ......... http://localhost:3000
+  API .......... http://localhost:8080/api/health
+  Gestor ....... admin@mantech.com.br
+  Tecnico ...... tecnico@mantech.com.br
+  Funcionario .. funcionario@mantech.com.br
+
+BANCO (DBeaver)
+  Conexao "PredictMaint (Docker)" ja criada pelo instalador.
+  Host 127.0.0.1 | Porta 3306 | Usuario root | Senha senai@123 | Banco predictmaint
+  Propriedades do driver: allowPublicKeyRetrieval=true e useSSL=false
+  Consultas de teste: projetos-senai\testes-banco.sql (esperado: 16 tabelas)
+
+SE DER ERRO
+- Portas diferentes de 3000/8080/3306: ja existe outra versao rodando.
+  No Docker Desktop > Containers, apague as pilhas antigas (predictmaint, predictmaint-teste)
+  e rode o instalador de novo. Os arquivos nao sao apagados.
+- Docker pede WSL: abra o PowerShell e rode  wsl --update  , depois reinicie o PC.
+- PC do laboratorio sem permissao de administrador: peca ao tecnico para instalar
+  o Docker Desktop; o resto o instalador faz sozinho.

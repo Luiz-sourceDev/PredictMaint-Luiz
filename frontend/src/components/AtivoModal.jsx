@@ -3,14 +3,16 @@ import Link from 'next/link';
 import { api } from '@/lib/api';
 import { Badge, Carga, Mini, Modal, useLoad } from '@/components/ui';
 import { num } from '@/lib/util';
+import { usePerfil } from '@/lib/perfil';
 
 /* Detalhe de uma máquina: usado em Máquinas, Planta e na busca. */
 export default function AtivoModal({ id, onClose }) {
+  const gestor = usePerfil() === 'gestor';
   const l = useLoad(() => api.maquina(id), [id]);
   const m = l.data;
   return (
     <Modal titulo={m ? <>{m.id} · {m.nome} <Badge k={m.status} /></> : id} size="modal-lg" onClose={onClose}
-      footer={m && <><Link className="btn btn-outline-dark" href={`/orcamento?maquina=${m.id}`}>Orçar manutenção</Link><Link className="btn btn-primary" href={`/medicoes?maquina=${m.id}`}>Registrar medição</Link></>}>
+      footer={m && <>{gestor && <Link className="btn btn-outline-dark" href={`/orcamento?maquina=${m.id}`}>Orçar manutenção</Link>}<Link className="btn btn-primary" href={`/medicoes?maquina=${m.id}`}>Registrar medição</Link></>}>
       <Carga l={l}>{m => <>
         <div className="row g-3 mb-3"><div className="col-sm-4"><Mini rotulo="Saúde" valor={m.saude + '%'} /></div><div className="col-sm-4"><Mini rotulo="Última medição" valor={m.ultima} /></div><div className="col-sm-4"><Mini rotulo="Próx. manutenção" valor={m.prox} /></div></div>
         <p className="text-secondary mb-3">Setor {m.setor}.</p>

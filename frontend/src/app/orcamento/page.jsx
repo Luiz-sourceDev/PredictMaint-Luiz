@@ -33,7 +33,7 @@ export default function Orcamento() {
   const campo = (k, rot, step, col = 'col-6') => <div className={col}><label className="form-label" htmlFor={'o-' + k}>{rot}</label><input id={'o-' + k} className="form-control" type="number" min="0" step={step} value={e[k]} onChange={num(k)} /></div>;
 
   return (
-    <Painel titulo="Orçamento manutenciário" acao={{ label: 'Imprimir', onClick: () => window.print() }}>
+    <Painel soGestor titulo="Orçamento manutenciário" acao={{ label: 'Imprimir', onClick: () => window.print() }}>
       <p className="pm-hello">Escolha a máquina e ajuste os números. A conta mostra quanto custa cuidar dela agora e quanto custaria esperar ela quebrar.</p>
       <div className="row g-3">
         <div className="col-xl-6"><section className="pm-card h-100"><h2>Montar orçamento</h2>
@@ -42,7 +42,7 @@ export default function Orcamento() {
           {e && <>
             <h3 className="h6">Mão de obra</h3><div className="row g-2 mb-3">{campo('tecnicos', 'Técnicos', 1, 'col-4')}{campo('horas', 'Horas de trabalho', .5, 'col-4')}{campo('valorHora', 'Valor da hora (R$)', 5, 'col-4')}</div>
             <h3 className="h6">Peças e materiais</h3>
-            {e.pecas.map((p, i) => <div className="row g-2 mb-2" key={i}><div className="col-6"><input className="form-control" placeholder="Peça ou material" aria-label="Nome da peça" value={p.nome} onChange={ev => setPeca(i, 'nome', ev.target.value)} /></div><div className="col-2"><input className="form-control" type="number" min="0" aria-label="Quantidade" value={p.qtd} onChange={ev => setPeca(i, 'qtd', ev.target.value)} /></div><div className="col-3"><input className="form-control" type="number" min="0" step="0.01" aria-label="Valor unitário em reais" value={p.valor} onChange={ev => setPeca(i, 'valor', ev.target.value)} /></div><div className="col-1"><button className="btn btn-outline-dark w-100 px-0" aria-label="Remover peça" onClick={() => setE({ ...e, pecas: e.pecas.filter((_, j) => j !== i) })}>×</button></div></div>)}
+            {e.pecas.map((p, i) => <div className="row g-2 mb-2" key={i}><div className="col-12 col-sm-6"><input className="form-control" placeholder="Peça ou material" aria-label="Nome da peça" value={p.nome} onChange={ev => setPeca(i, 'nome', ev.target.value)} /></div><div className="col-4 col-sm-2"><input className="form-control" type="number" min="0" aria-label="Quantidade" value={p.qtd} onChange={ev => setPeca(i, 'qtd', ev.target.value)} /></div><div className="col-6 col-sm-3"><input className="form-control" type="number" min="0" step="0.01" aria-label="Valor unitário em reais" value={p.valor} onChange={ev => setPeca(i, 'valor', ev.target.value)} /></div><div className="col-2 col-sm-1"><button className="btn btn-outline-dark w-100 px-0" aria-label="Remover peça" onClick={() => setE({ ...e, pecas: e.pecas.filter((_, j) => j !== i) })}>×</button></div></div>)}
             <button className="btn btn-outline-dark btn-sm mb-3" onClick={() => setE({ ...e, pecas: [...e.pecas, { nome: '', qtd: 1, valor: 0 }] })}>+ Adicionar peça</button>
             <h3 className="h6">Parada e extras</h3><div className="row g-2">{campo('horasParada', 'Horas de máquina parada', 1)}{campo('custoParadaHora', 'Custo da hora parada (R$)', 50)}{campo('terceiros', 'Terceiros (R$)', 100)}{campo('contingencia', 'Margem de segurança (%)', 1)}</div></>}
         </section></div>

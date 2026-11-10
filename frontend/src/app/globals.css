@@ -133,6 +133,7 @@ h1,h2,h3,h4,.h5,.h6{font-weight:700;letter-spacing:-.01em}
 .table th{font-size:.78rem;color:var(--pm-muted);font-weight:700;border-bottom:2px solid var(--pm-line)}
 .table td{vertical-align:middle}
 .pm-health{display:flex;align-items:center;gap:.6rem;min-width:150px}
+@media (max-width:575.98px){.pm-health{min-width:110px}}
 .pm-health .pm-bar{flex:1}
 .pm-mini{background:var(--pm-bg);border-radius:10px;padding:.7rem .9rem}
 .pm-mini b{display:block;font-size:1.3rem}
@@ -228,3 +229,43 @@ h1,h2,h3,h4,.h5,.h6{font-weight:700;letter-spacing:-.01em}
   .pm-card{break-inside:avoid}
 }
 .d-contents{display:contents}
+
+/* ---------- sininho de avisos e tela de usuários ---------- */
+.pm-sino{position:relative;flex:none;width:42px;height:42px;border-radius:10px;border:1px solid var(--pm-line);background:#fff;display:grid;place-items:center;color:var(--pm-ink,#1b1f27);cursor:pointer}
+.pm-sino svg{width:22px;height:22px;fill:currentColor}
+.pm-sino:hover{background:#f3f4f8}
+.pm-sino:focus-visible{outline:3px solid var(--pm-yellow,#ffcc14);outline-offset:2px}
+.pm-sino.claro{background:transparent;border-color:rgba(255,255,255,.45);color:#fff}
+.pm-sino.claro:hover{background:rgba(255,255,255,.08)}
+.pm-sino.tem svg{animation:pm-balanca 1.8s ease-in-out 2}
+.pm-sino-n{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#c0392b;color:#fff;font-size:.72rem;font-weight:800;display:grid;place-items:center;border:2px solid #fff}
+@keyframes pm-balanca{0%,100%{transform:rotate(0)}20%{transform:rotate(14deg)}40%{transform:rotate(-12deg)}60%{transform:rotate(8deg)}80%{transform:rotate(-4deg)}}
+@media (prefers-reduced-motion:reduce){.pm-sino.tem svg{animation:none}}
+.pm-aviso{border:1px solid var(--pm-line);border-left:4px solid #9aa0ac;border-radius:8px;padding:.7rem .9rem;cursor:pointer;background:#fff}
+.pm-aviso.urgente{border-left-color:#c0392b;background:#fdf3f2}
+.pm-aviso.lida{opacity:.62;cursor:default}
+.pm-aviso p{font-size:.93rem}
+.pm-perfis{display:flex;flex-wrap:wrap;gap:.3rem}
+.pm-inativo td{color:#8a909c}
+.pm-inativo td b{text-decoration:line-through}
+.pm-b-perfil-gestor{background:#1b1e24;color:#ffcc14}
+.pm-b-perfil-tecnico{background:#dfe7f5;color:#1f3b6b}
+.pm-b-perfil-funcionario{background:var(--pm-gray-bg);color:#3b4252}
+
+/* Níveis de acesso: chaves liga/desliga */
+.pm-chave{display:flex;align-items:center;gap:1rem;border:1px solid var(--pm-line);border-left:4px solid #c3c7cf;border-radius:10px;padding:.75rem .9rem;background:#fff;transition:border-color .15s,background .15s}
+.pm-chave.on{border-left-color:#1e8e3e;background:#f3faf5}
+.pm-chave.travada{opacity:.75}
+.pm-chave label{cursor:pointer}
+.pm-chave-aviso{color:#8a5a00;font-weight:600}
+.pm-switch{display:flex;flex-direction:column;align-items:center;gap:.15rem;padding-left:0;min-width:74px}
+.pm-switch .form-check-input{float:none;margin:0;width:3.1em;height:1.6em;cursor:pointer}
+.pm-switch .form-check-input:checked{background-color:#1e8e3e;border-color:#1e8e3e}
+.pm-switch .form-check-input:focus{box-shadow:0 0 0 .2rem rgba(30,142,62,.25);border-color:#1e8e3e}
+.pm-switch .form-check-input:disabled{cursor:not-allowed}
+.pm-switch-txt{font-size:.72rem;font-weight:700;color:#5b6170;text-transform:uppercase;letter-spacing:.03em}
+.pm-chave.on .pm-switch-txt{color:#1e8e3e}
+.pm-chave-setor{border:1px dashed #d4a017;border-radius:10px;padding:.7rem .9rem;margin-top:.4rem;background:#fffbea}
+.pm-perfis-btn{border:0;background:transparent;padding:.25rem;border-radius:8px;cursor:pointer;text-align:left}
+.pm-perfis-btn:hover{background:#f3f4f8}
+.pm-perfis-btn:focus-visible{outline:3px solid var(--pm-yellow,#ffcc14)}

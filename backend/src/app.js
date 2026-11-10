@@ -2,33 +2,32 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 
-import { errorHandler } from "./middlewares/errorHandler.js";
-import healthRoutes from "./routes/healthRoutes.js";
-import maquinasRoutes from "./routes/maquinasRoutes.js";
-import usersRoutes from "./routes/userRoutes.js";
+import { errorHandler, rotaNaoEncontrada } from "./middlewares/errorHandler.js";
+import { PASTA_UPLOADS } from "./middlewares/upload.js";
+import rotas from "./routes/index.js";
 
 const app = express();
 
-app.use(helmet());
+// Atrás do proxy do Coolify/Traefik: confia no cabeçalho X-Forwarded-* do primeiro proxy
+app.set("trust proxy", 1);
+
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } })); // libera as fotos para o front
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    // Aceita mais de uma origem separando por vírgula: http://localhost:3000,https://meusite.com
+    origin: (process.env.FRONTEND_URL || "http://localhost:3000").split(",").map((s) => s.trim()),
   }),
 );
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 
 app.get("/", (request, response) => {
-  response.json({
-    message: "API do projeto base",
-  });
+  response.json({ mensagem: "API do PredictMaint", saude: "/api/health" });
 });
 
-app.use("/api/users", usersRoutes);
+app.use("/uploads", express.static(PASTA_UPLOADS, { maxAge: "7d" }));
+app.use("/api", rotas);
 
-app.use("/api/maquinas", maquinasRoutes);
-
-app.use("/api/health", healthRoutes);
-
+app.use(rotaNaoEncontrada);
 app.use(errorHandler);
 
 export default app;

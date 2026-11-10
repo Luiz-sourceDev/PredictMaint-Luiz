@@ -49,8 +49,8 @@ import { getUser } from '@/lib/util';
 import { Modal, useToast } from '@/components/ui';
 
 const DEMO = [
-  { rotulo: 'Acesso máximo (admin)', email: 'admin@mantech.com.br', senha: 'Mantech@2026', perfil: 'gestor' },
-  { rotulo: 'Acesso normal (funcionário)', email: 'funcionario@mantech.com.br', senha: 'Func@2026', perfil: 'funcionario' }
+  { rotulo: 'Acesso máximo (admin)', email: 'admin@mantech.com.br', senha: 'senai@123', perfil: 'gestor' },
+  { rotulo: 'Acesso normal (funcionário)', email: 'funcionario@mantech.com.br', senha: 'senai@123', perfil: 'funcionario' }
 ];
 
 export default function Login() {
