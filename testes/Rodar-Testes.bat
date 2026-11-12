@@ -25,7 +25,17 @@ function Falha($m) {
     Read-Host "`n    Pressione Enter para fechar"
     exit 1
 }
-function NoAr($url) { try { (Invoke-WebRequest $url -UseBasicParsing -TimeoutSec 5).StatusCode -eq 200 } catch { $false } }
+# Confere se o endereco responde 200. Usa o curl.exe do Windows (aceita certificado proprio, TLS 1.2+);
+# se nao houver curl, usa o PowerShell com TLS 1.2 e aceitando o certificado.
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+function NoAr($url) {
+    $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
+    if ($curl) {
+        $codigo = & $curl.Source -k -s -o NUL -w '%{http_code}' --max-time 8 $url 2>$null
+        return ($codigo -eq '200')
+    }
+    try { (Invoke-WebRequest $url -UseBasicParsing -TimeoutSec 8).StatusCode -eq 200 } catch { $false }
+}
 
 Write-Host ''
 Write-Host '  =============================================' -ForegroundColor White
@@ -59,7 +69,16 @@ if (-not $remoto -and -not (NoAr "$($env:API_URL)/health")) {
     cmd /c "docker compose up -d 2>&1" | Out-Host
     for ($i = 0; $i -lt 36; $i++) { if (NoAr "$($env:API_URL)/health") { break }; Start-Sleep 5 }
 }
-if (-not (NoAr "$($env:API_URL)/health")) { Falha "A API nao respondeu em $($env:API_URL). Ligue o sistema (atalho Iniciar PredictMaint) e rode de novo." }
+# Servidor que so responde em http (ou so em https): troca sozinho
+if ($remoto -and -not (NoAr "$($env:API_URL)/health")) {
+    if ($env:API_URL -like 'https:*') { $alt = 'http:' + $env:API_URL.Substring(6) } else { $alt = 'https:' + $env:API_URL.Substring(5) }
+    if (NoAr "$alt/health") {
+        Aviso "O servidor respondeu em $alt (troquei http/https sozinho)."
+        $env:API_URL = $alt
+        if ($env:SITE_URL -like 'https:*') { $env:SITE_URL = 'http:' + $env:SITE_URL.Substring(6) } else { $env:SITE_URL = 'https:' + $env:SITE_URL.Substring(5) }
+    }
+}
+if (-not (NoAr "$($env:API_URL)/health")) { if ($remoto) { Falha "O servidor nao respondeu em $($env:API_URL)/health. Abra esse endereco no navegador: se abrir la, mande um print desta janela." } else { Falha "A API nao respondeu em $($env:API_URL). Ligue o sistema (atalho Iniciar PredictMaint) e rode de novo." } }
 Ok "API em $($env:API_URL) | site em $($env:SITE_URL)"
 
 # ---------------------------------------------------------------
