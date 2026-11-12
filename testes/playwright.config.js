@@ -24,6 +24,8 @@ export default defineConfig({
     screenshot: "only-on-failure",
     trace: "retain-on-failure",
     locale: "pt-BR",
+    // O servidor do SENAI usa certificado próprio ("Não seguro"): aceita nos testes.
+    ignoreHTTPSErrors: true,
     timezoneId: "America/Sao_Paulo",
   },
   projects: [

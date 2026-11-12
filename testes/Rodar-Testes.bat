@@ -48,8 +48,12 @@ if (Test-Path $envArq) {
 }
 if (-not $env:API_URL)  { $env:API_URL  = "http://localhost:$PB/api" }
 if (-not $env:SITE_URL) { $env:SITE_URL = "http://localhost:$PF" }
+# Servidor com certificado proprio ("Nao seguro"): os testes aceitam mesmo assim
+if ($env:API_URL -like 'https:*') { $env:NODE_TLS_REJECT_UNAUTHORIZED = '0'; $env:NODE_NO_WARNINGS = '1' }
 
-if (-not (NoAr "$($env:API_URL)/health")) {
+$remoto = $env:API_URL -notmatch 'localhost|127\.0\.0\.1'
+if ($remoto) { [Net.ServicePointManager]::ServerCertificateValidationCallback = { $true } }
+if (-not $remoto -and -not (NoAr "$($env:API_URL)/health")) {
     Info 'O sistema esta desligado. Ligando no Docker...'
     Set-Location $PROJETO
     cmd /c "docker compose up -d 2>&1" | Out-Host
@@ -60,7 +64,8 @@ Ok "API em $($env:API_URL) | site em $($env:SITE_URL)"
 
 # ---------------------------------------------------------------
 Passo '2/5 Banco de dados'
-$r = Read-Host '    Recriar o banco com os dados de exemplo antes de testar? Apaga o que foi cadastrado a mao. (S/N) [N]'
+if ($remoto) { $r = 'N'; Info 'Testando o servidor: o banco de la nao e recriado.' }
+else { $r = Read-Host '    Recriar o banco com os dados de exemplo antes de testar? Apaga o que foi cadastrado a mao. (S/N) [N]' }
 if ($r -match '^[sS]') {
     Set-Location $PROJETO
     foreach ($arq in @('01-schema.sql', '02-seed.sql')) {
