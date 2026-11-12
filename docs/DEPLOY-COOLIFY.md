@@ -67,5 +67,22 @@ Não use `localhost` em nenhuma URL: no servidor, `localhost` é o próprio cont
 | "Não consegui falar com a API em http://back…" | Build antigo, com o endereço completo da API (site em `https` chamando API em `http`) | Mude `NEXT_PUBLIC_API_URL` para `/api` e faça Redeploy **com rebuild**. |
 | `/api/health` pelo endereço do site dá 502/erro | O serviço `backend` não subiu ou mudou de nome/porta | Veja os logs do `backend` no Coolify; se mudou a porta, ajuste `API_INTERNA`. |
 | `/api/health` sem banco | Senha do `DB_PASSWORD` diferente de `MYSQL_PASSWORD` | Deixe as duas iguais. Se o volume já foi criado com outra senha, apague o volume e faça Deploy. |
+| Acentos e ç aparecem errados (ex.: `MecÃ¢nica`, `Manuten??o`) | Banco criado antes da configuração UTF-8 (`database/conf/utf8mb4.cnf`) | Faça Redeploy com rebuild e **recrie o banco**: apague o volume `mysql-data` e faça Deploy. Veja "Acentos" abaixo. |
 | Login cai sozinho | `JWT_SECRET` foi trocado | Normal: entre de novo. |
 | Usuário não consegue entrar | Foi desativado na tela Usuários | O gestor reativa em Usuários › Situação: Desativados › Reativar. |
+
+## Acentos (UTF-8)
+
+A imagem do banco (`database/Dockerfile`) já sobe com `utf8mb4` no servidor e no terminal `mysql`
+(`database/conf/utf8mb4.cnf`). Um banco criado **antes** dessa configuração pode ter gravado os
+textos com acento quebrados; nesse caso não adianta só reiniciar.
+
+Para conferir, no terminal do serviço `database`:
+
+```sql
+SELECT nome, HEX(nome) FROM predictmaint.equipes WHERE id = 1;
+```
+
+- `Mecânica` e o HEX contém `C3A2` → está certo.
+- HEX contém `C383C2A2` (acento gravado duas vezes) ou `3F` (virou `?`) → o banco precisa ser recriado:
+  apague o volume `mysql-data` em **Persistent Storage** e faça **Deploy** (os dados de exemplo voltam certos).

@@ -37,3 +37,12 @@ test("busca encontra máquina e OS", async () => {
   status(r, 200, "busca");
   assert.ok(r.body.some((x) => x.tipo === "Máquina"));
 });
+
+test("acentos e ç chegam certos do banco (UTF-8)", async () => {
+  const setores = (await get("/setores", { token: T.gestor })).body;
+  assert.ok(setores.includes("Logística"), `setores com acento errado: ${setores.join(", ")}`);
+  const ordens = (await get("/ordens", { token: T.gestor })).body;
+  const textos = ordens.map((o) => `${o.titulo} ${o.equipe}`).join(" ");
+  assert.match(textos, /Mecânica/, "a palavra Mecânica não veio certa");
+  assert.doesNotMatch(textos, /Ã|Â|�/, "apareceu acento quebrado (banco sem UTF-8)");
+});
