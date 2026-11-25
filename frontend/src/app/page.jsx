@@ -46,6 +46,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api, getUser } from '@/lib/util';
 import { Modal, useToast } from '@/components/ui';
+import Landing from '@/components/Landing';
 
 const DEMO = [
   { rotulo: 'Acesso máximo (admin)', email: 'admin@mantech.com.br', senha: 'senai@123', perfil: 'gestor' },
@@ -71,13 +72,19 @@ export default function Login() {
   async function recuperar() { try { await api.recuperarSenha({ usuario: rec }); setEsq(false); toast('Pedido enviado ao administrador.'); } catch (e) { toast(e.message, 'danger'); } }
 
   return (
-    <div className="pm-login">
+    <>
+    <header className="lp-nav">
+      <a href="#entrar" className="lp-nav-logo"><img src="/mantech-logo.png" alt="Mantech · PredictMaint" /></a>
+      <nav aria-label="Seções da página"><a href="#como-funciona">Como funciona</a><a href="#recursos">Recursos</a><a href="#perfis">Perfis</a><a href="#equipe">Equipe</a></nav>
+      <a href="#entrar" className="btn btn-primary btn-sm">Entrar</a>
+    </header>
+    <div className="pm-login" id="entrar">
       <section className="pm-login-l">
-        <img src="/mantech-logo.png" alt="Mantech" />
         <h1>Antecipe a falha.<br />Proteja a produção.</h1>
         <p className="lead">Monitoramento preditivo de máquinas, alertas e ordens de serviço em um só lugar.</p>
         <svg className="pm-beat" viewBox="0 0 420 60" aria-hidden="true"><path d="M0 34H150L166 6L186 54L200 34H290L304 12L320 48L332 34H420" /></svg>
         <ul><li>Alertas por tendência, antes da parada</li><li>Ordens de serviço integradas aos alertas</li><li>Chamados abertos direto do chão de fábrica</li></ul>
+        <a href="#como-funciona" className="lp-saiba">Conheça o sistema ↓</a>
       </section>
       <section className="pm-login-r">
         <div className="pm-card pm-login-card p-4">
@@ -98,6 +105,8 @@ export default function Login() {
       {esq && <Modal titulo="Recuperar acesso" onClose={() => setEsq(false)} footer={<button className="btn btn-primary" onClick={recuperar}>Pedir nova senha</button>}>
         <p>Informe seu e-mail ou matrícula. Se ele existir, o administrador recebe o pedido de nova senha.</p><input className="form-control" placeholder="nome@empresa.com.br" value={rec} onChange={e => setRec(e.target.value)} /></Modal>}
     </div>
+    <Landing />
+    </>
   );
 }
 
