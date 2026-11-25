@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { AreaFuncionario } from '@/components/Painel';
 import { Badge, Carga, Vazio, useLoad, useToast } from '@/components/ui';
-import { api } from '@/lib/api';
+import { api, urlArquivo } from '@/lib/util';
 
 const SIT = { 'Registrado': 'neutro', 'Triado': 'info', 'Técnico designado': 'info', 'Em reparo': 'atencao', 'Concluído': 'normal' };
 
@@ -23,6 +23,8 @@ function Lista() {
             <tbody>{lista.length ? lista.map(x => <tr key={x.id} className={x.id === sel ? 'table-warning' : ''} style={{ cursor: 'pointer' }} onClick={() => setSel(x.id)}><td><b>{x.id}</b></td><td>{x.maquina}</td><td>{x.problema}</td><td><Badge k={SIT[x.situacao] || 'neutro'}>{x.situacao}</Badge></td><td>{x.aberto}</td></tr>) : <tr><td colSpan={5}><Vazio titulo="Você ainda não abriu chamados" sub="Viu algo estranho? Abra o primeiro em “Abrir chamado”." /></td></tr>}</tbody></table></div></section></div>
           <div className="col-lg-5"><section className="pm-card h-100" aria-live="polite">{c ? <>
             <h2>{c.id} · {c.maquina} · {c.problema}</h2>
+            {c.descricao && <p className="mb-2">{c.descricao}</p>}
+            {c.foto && <a className="pm-foto d-block mb-3" href={urlArquivo(c.foto)} target="_blank" rel="noreferrer"><img src={urlArquivo(c.foto)} alt={`Foto anexada ao chamado ${c.id}`} loading="lazy" /><small>Abrir foto em tamanho real</small></a>}
             <ol className="pm-tl">{c.timeline.map(t => <li key={t.nome} className={t.estado === 'feito' ? '' : t.estado}><b>{t.nome}</b>{(t.quando || t.detalhe) && <small>{[t.quando, t.detalhe].filter(Boolean).join(' · ')}</small>}</li>)}</ol>
             {c.comentarios.length > 0 && <><h3 className="h6">Seus comentários</h3>{c.comentarios.map((k, i) => <p className="mb-1" key={i}><small className="text-secondary">{k.quando}</small><br />{k.texto}</p>)}</>}
             <label className="form-label mt-2" htmlFor="cm">Adicionar informação</label><textarea id="cm" className="form-control mb-2" rows={2} placeholder="Algo mudou? Escreva aqui" value={txt} onChange={e => setTxt(e.target.value)} /><button className="btn btn-outline-dark" onClick={() => comentar(c)}>Enviar comentário</button></> : <h2>Detalhe</h2>}</section></div>

@@ -2,6 +2,22 @@
 
 Template para alunos criarem forks com a mesma stack de frontend, backend e banco de dados.
 
+## Configurar o ambiente num PC novo (Windows)
+
+1. Baixe a pasta [`instalador/`](instalador/) (ou o zip que a equipe compartilha).
+2. Dê dois cliques em `Configurar-Ambiente-PredictMaint.bat`.
+
+Ele instala o que faltar (Git, Docker Desktop, VS Code, DBeaver e Node.js), baixa esta branch,
+sobe banco + API + site no Docker, cria os atalhos "Iniciar/Parar PredictMaint", a conexão
+"PredictMaint (Docker)" no DBeaver e abre o projeto no VS Code. Todas as senhas: `senai@123`.
+Detalhes e solução de problemas: [`instalador/LEIA-ME.txt`](instalador/LEIA-ME.txt).
+
+## Testes automatizados
+
+181 testes (157 da API + 24 de tela, no computador e no celular) em [`testes/`](testes/).
+Com o sistema ligado, dê dois cliques em `testes/Rodar-Testes.bat` (ou no atalho **Testar PredictMaint**).
+O que cada um confere: [`testes/LEIA-ME.md`](testes/LEIA-ME.md).
+
 ## Stack Padrao
 
 - Frontend: Next.js `16.2.10` com JavaScript, sem Tailwind e sem Bootstrap por padrao.
@@ -110,15 +126,15 @@ BACKEND_PORT=8080
 FRONTEND_URL=http://localhost:3000
 NEXT_PUBLIC_API_URL=http://localhost:8080/api
 
-MYSQL_ROOT_PASSWORD=root_password
+MYSQL_ROOT_PASSWORD=senai@123
 MYSQL_DATABASE=app_db
 MYSQL_USER=app_user
-MYSQL_PASSWORD=app_password
+MYSQL_PASSWORD=senai@123
 
 DB_HOST=database
 DB_PORT=3306
 DB_USER=app_user
-DB_PASSWORD=app_password
+DB_PASSWORD=senai@123
 DB_NAME=app_db
 ```
 
@@ -144,7 +160,7 @@ FRONTEND_URL=http://localhost:3000
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=app_user
-DB_PASSWORD=app_password
+DB_PASSWORD=senai@123
 DB_NAME=app_db
 ```
 
@@ -165,9 +181,8 @@ npm run dev
 npm start
 ```
 
-Rotas iniciais:
+Rotas, login e permissoes: veja [`backend/README.md`](backend/README.md).
 
-- `GET /` retorna uma mensagem basica da API.
 - `GET /api/health` retorna status da API e testa a conexao com MySQL.
 
 Pastas padrao:
@@ -188,11 +203,14 @@ npm start
 npm run lint
 ```
 
+Com `NEXT_PUBLIC_API_URL` preenchido em `frontend/.env.local`, o front usa a API e o banco de verdade.
+Se a variavel ficar vazia, o front roda em modo demonstracao (dados de `src/lib/mock.jsx`, sem backend).
+
 O projeto esta sem Tailwind e sem Bootstrap por padrao. Cada aluno pode instalar e configurar a biblioteca CSS escolhida conforme a necessidade do projeto.
 
 ## Banco de Dados
 
-O arquivo `database/init/01-schema.sql` cria a base inicial quando o container MySQL sobe pela primeira vez.
+Os arquivos `database/init/01-schema.sql` (estrutura) e `02-seed.sql` (dados de exemplo) criam o banco `predictmaint` quando o container MySQL sobe pela primeira vez. Detalhes, DER e logins de teste em [`database/README.md`](database/README.md).
 
 Para reiniciar o banco local do zero:
 
@@ -202,6 +220,8 @@ docker compose up -d database
 ```
 
 ## Deploy no Coolify
+
+Passo a passo completo da homologação (compose inteiro, domínios e variáveis): [`docs/DEPLOY-COOLIFY.md`](docs/DEPLOY-COOLIFY.md).
 
 Crie servicos separados apontando para os Dockerfiles:
 

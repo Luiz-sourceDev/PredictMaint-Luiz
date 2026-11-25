@@ -3,13 +3,12 @@ import { useEffect, useState } from 'react';
 import Painel from '@/components/Painel';
 import AtivoModal from '@/components/AtivoModal';
 import { Badge, Carga, Modal, SaudeBar, Vazio, useLoad, useToast } from '@/components/ui';
-import { api } from '@/lib/api';
-import { param } from '@/lib/util';
+import { api, param } from '@/lib/util';
 
 function NovaMaquina({ setores, onClose, onOk }) {
   const toast = useToast(), [f, setF] = useState({ id: '', nome: '', setor: '', prox: '', custoParada: '' });
   const set = k => e => setF({ ...f, [k]: e.target.value });
-  async function salvar() { try { await api.criarMaquina(f); toast('Máquina cadastrada. Já aparece na lista e na planta.'); onOk(); } catch (e) { toast(e.message, 'danger'); } }
+  async function salvar() { try { await api.criarMaquina(f); toast('Máquina cadastrada. Já aparece na lista e no dashboard.'); onOk(); } catch (e) { toast(e.message, 'danger'); } }
   return (
     <Modal titulo="Nova máquina" onClose={onClose} footer={<button className="btn btn-primary" onClick={salvar}>Cadastrar máquina</button>}>
       <div className="row g-3">
@@ -30,7 +29,7 @@ export default function Maquinas() {
   useEffect(() => { const id = param('id'); if (id) setDet(id); }, []);
   const T = todas.data || [], setores = [...new Set(T.map(m => m.setor))], c = s => T.filter(m => m.status === s).length;
   return (
-    <Painel titulo="Máquinas e ativos" acao={{ label: 'Nova máquina', onClick: () => setNova(true) }}>
+    <Painel titulo="Máquinas e ativos" acao={{ label: 'Nova máquina', onClick: () => setNova(true), soGestor: true }}>
       <div className="row g-3 mb-3">{[['Ativos monitorados', T.length, `Em ${setores.length} setores`], ['Normais', c('normal'), 'Índice de saúde acima de 75%'], ['Em atenção', c('atencao'), 'Acompanhar tendência'], ['Críticos', c('critico'), 'Ação imediata']].map(([a, b, s]) => <div className="col-6 col-xl-3" key={a}><div className="pm-card h-100"><p className="pm-lbl">{a}</p><p className="pm-kpi">{b}</p><p className="pm-sub">{s}</p></div></div>)}</div>
       <div className="pm-card mb-3"><div className="row g-3 align-items-end">
         <div className="col-md-3"><label className="form-label" htmlFor="f-s">Setor</label><select id="f-s" className="form-select" value={fs} onChange={e => setFs(e.target.value)}><option value="">Todos os setores</option>{setores.map(s => <option key={s}>{s}</option>)}</select></div>

@@ -1,0 +1,4 @@
+node_modules/
+relatorio-telas/
+test-results/
+playwright-report/

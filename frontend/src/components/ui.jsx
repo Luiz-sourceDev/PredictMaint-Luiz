@@ -5,7 +5,7 @@ import { NOMES, num } from '@/lib/util';
 /* ---------- pecinhas ---------- */
 export const Badge = ({ k, children }) => <span className={`pm-b pm-b-${k}`}>{children ?? NOMES[k] ?? k}</span>;
 export const SaudeBar = ({ v }) => <div className="pm-health"><div className="pm-bar"><i style={{ width: v + '%' }} /></div><span>{v}%</span></div>;
-export const Vazio = ({ titulo, sub, children }) => <div className="pm-empty"><strong>{titulo}</strong>{sub}{children}</div>;
+export const Vazio = ({ titulo, sub, children }) => <div className="pm-empty"><strong>{titulo}</strong>{sub && <span className="d-block">{sub}</span>}{children && <div className="pm-empty-acao">{children}</div>}</div>;
 export const Mini = ({ rotulo, valor }) => <div className="pm-mini"><span className="pm-lbl">{rotulo}</span><b>{valor}</b></div>;
 
 /* ---------- carregamento de dados ---------- */
@@ -22,7 +22,7 @@ export function useLoad(fn, deps = []) {
 }
 export function Carga({ l, children }) {
   if (l.erro) return <div className="pm-empty"><strong>Não consegui carregar esta tela.</strong>{l.erro}<div className="mt-3"><button className="btn btn-primary" onClick={l.recarregar}>Tentar de novo</button></div></div>;
-  if (l.carregando && !l.data) return <p className="text-secondary" role="status">Buscando os dados da planta…</p>;
+  if (l.carregando && !l.data) return <p className="text-secondary" role="status">Carregando os dados…</p>;
   return children(l.data);
 }
 

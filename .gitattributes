@@ -1,0 +1,3 @@
+instalador/*.bat -text
+instalador/*.txt -text
+testes/*.bat -text

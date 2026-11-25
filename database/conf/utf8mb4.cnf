@@ -1,0 +1,11 @@
+# PredictMaint: tudo em UTF-8 (utf8mb4) para acentos e ç aparecerem certo,
+# no servidor, nos scripts de criação do banco e no terminal "mysql" do container.
+[mysqld]
+character-set-server = utf8mb4
+collation-server = utf8mb4_0900_ai_ci
+
+[client]
+default-character-set = utf8mb4
+
+[mysql]
+default-character-set = utf8mb4

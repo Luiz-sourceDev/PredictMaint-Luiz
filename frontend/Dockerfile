@@ -9,8 +9,12 @@ FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-ARG NEXT_PUBLIC_API_URL
+# /api = o site repassa as chamadas para a API (recomendado). Também aceita um endereço completo.
+ARG NEXT_PUBLIC_API_URL=/api
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+# Endereço da API dentro da rede do Docker (nome do serviço no compose)
+ARG API_INTERNA=http://backend:8080
+ENV API_INTERNA=$API_INTERNA
 
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .

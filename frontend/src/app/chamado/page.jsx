@@ -3,7 +3,8 @@ import { useRef, useState } from 'react';
 import Link from 'next/link';
 import { AreaFuncionario } from '@/components/Painel';
 import { Badge, Carga, Modal, useLoad, useToast } from '@/components/ui';
-import { api } from '@/lib/api';
+import { api } from '@/lib/util';
+import { prepararFoto } from '@/lib/foto';
 
 const Chips = ({ nome, lista, valor, onChange }) => <div className="d-flex flex-wrap gap-2">{lista.map(t => <span key={t} className="d-contents"><input type="radio" className="btn-check" name={nome} id={nome + t} checked={valor === t} onChange={() => onChange(t)} /><label className="btn btn-outline-dark chip" htmlFor={nome + t}>{t}</label></span>)}</div>;
 
@@ -11,6 +12,15 @@ function Form({ u }) {
   const toast = useToast(), maqs = useLoad(() => api.maquinas({ ordem: 'codigo' })), alertas = useLoad(() => api.alertas({ setor: u.setor }), [u.setor]);
   const [maq, setMaq] = useState(''), [prob, setProb] = useState('Ruído anormal'), [urg, setUrg] = useState('Média'), [desc, setDesc] = useState(''), [foto, setFoto] = useState(null), [env, setEnv] = useState(false), [ok, setOk] = useState(null), [qr, setQr] = useState(null);
   const fileRef = useRef(null), M = maqs.data || [], atual = maq || (M[0] || {}).id || '';
+  const [previa, setPrevia] = useState(null), [preparando, setPreparando] = useState(false);
+  // Guarda a foto e a prévia juntas (libera a prévia antiga da memória)
+  function trocarFoto(arq) { if (previa) URL.revokeObjectURL(previa); setFoto(arq); setPrevia(arq ? URL.createObjectURL(arq) : null); }
+  async function escolherFoto(e) {
+    const arq = e.target.files[0]; e.target.value = '';
+    if (!arq) return;
+    setPreparando(true);
+    try { trocarFoto(await prepararFoto(arq)); } catch (er) { toast(er.message, 'danger'); } finally { setPreparando(false); }
+  }
 
   async function enviar(e) {
     e.preventDefault(); setEnv(true);
@@ -27,13 +37,14 @@ function Form({ u }) {
     <>
       <h1 className="h2 mb-1">Abrir chamado de manutenção</h1><p className="text-secondary mb-4">Viu algo errado em uma máquina? Conte para a equipe de manutenção.</p>
       <div className="row g-3">
-        <div className="col-lg-8"><section className="pm-card">{ok ? <div className="pm-empty"><strong>Chamado {ok.id} enviado.</strong>O gestor já foi avisado e vai definir prioridade e equipe.<div className="d-flex gap-2 justify-content-center mt-3"><Link className="btn btn-primary" href="/meus-chamados">Acompanhar chamado</Link><button className="btn btn-outline-dark" onClick={() => { setOk(null); setEnv(false); setDesc(''); setFoto(null); }}>Abrir outro</button></div></div> :
+        <div className="col-lg-8"><section className="pm-card">{ok ? <div className="pm-empty"><strong>Chamado {ok.id} enviado.</strong>O gestor já foi avisado e vai definir prioridade e equipe.<div className="d-flex gap-2 justify-content-center mt-3"><Link className="btn btn-primary" href="/meus-chamados">Acompanhar chamado</Link><button className="btn btn-outline-dark" onClick={() => { setOk(null); setEnv(false); setDesc(''); trocarFoto(null); }}>Abrir outro</button></div></div> :
           <form onSubmit={enviar} noValidate>
-            <div className="row g-2 mb-3 align-items-end"><div className="col"><label className="form-label" htmlFor="c-m">Máquina</label><select id="c-m" className="form-select" value={atual} onChange={e => setMaq(e.target.value)}>{M.map(m => <option key={m.id} value={m.id}>{m.id} · {m.nome}</option>)}</select></div><div className="col-auto"><button type="button" className="btn btn-outline-dark" onClick={() => setQr('')}>Escanear QR da máquina</button></div></div>
+            <div className="row g-2 mb-3 align-items-end"><div className="col-12 col-sm"><label className="form-label" htmlFor="c-m">Máquina</label><select id="c-m" className="form-select" value={atual} onChange={e => setMaq(e.target.value)}>{M.map(m => <option key={m.id} value={m.id}>{m.id} · {m.nome}</option>)}</select></div><div className="col-12 col-sm-auto"><button type="button" className="btn btn-outline-dark w-100" onClick={() => setQr('')}>Escanear QR da máquina</button></div></div>
             <fieldset className="mb-3"><legend className="form-label">O que está acontecendo?</legend><Chips nome="prob" lista={['Ruído anormal', 'Vazamento', 'Superaquecimento', 'Parada', 'Outro']} valor={prob} onChange={setProb} /></fieldset>
             <fieldset className="mb-3"><legend className="form-label">Urgência</legend><Chips nome="urg" lista={['Baixa', 'Média', 'Alta', 'Máquina parada']} valor={urg} onChange={setUrg} /></fieldset>
             <div className="mb-3"><label className="form-label" htmlFor="c-d">Descrição</label><textarea id="c-d" className="form-control" rows={5} placeholder="Descreva o que você viu, ouviu ou sentiu" value={desc} onChange={e => setDesc(e.target.value)} /></div>
-            <div className="d-flex flex-wrap gap-2 justify-content-between"><div><input ref={fileRef} type="file" accept="image/*" capture="environment" hidden onChange={e => setFoto(e.target.files[0] || null)} /><button type="button" className="btn btn-outline-dark" onClick={() => fileRef.current.click()}>Anexar foto</button> <span className="text-secondary small">{foto?.name}</span></div>
+            <div className="d-flex flex-wrap gap-2 justify-content-between"><div><input ref={fileRef} type="file" accept="image/*" hidden onChange={escolherFoto} /><button type="button" className="btn btn-outline-dark" disabled={preparando} onClick={() => fileRef.current.click()}>{preparando ? 'Preparando foto…' : foto ? 'Trocar foto' : 'Anexar foto'}</button>
+                {previa && <div className="pm-foto-previa mt-2"><img src={previa} alt="Foto que vai junto com o chamado" /><button type="button" className="btn btn-sm btn-outline-danger" onClick={() => trocarFoto(null)}>Remover foto</button></div>}</div>
               <div className="d-flex gap-2"><Link className="btn btn-outline-dark" href="/meus-chamados">Cancelar</Link><button className="btn btn-primary px-4" disabled={env}>Enviar chamado</button></div></div>
           </form>}</section></div>
         <div className="col-lg-4">

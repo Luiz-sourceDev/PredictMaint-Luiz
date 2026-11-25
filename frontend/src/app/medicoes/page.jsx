@@ -3,8 +3,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Painel from '@/components/Painel';
 import { Badge, Carga, LineChart, Vazio, useLoad, useToast } from '@/components/ui';
-import { api } from '@/lib/api';
-import { num, param } from '@/lib/util';
+import { api, num, param } from '@/lib/util';
 
 const UN = { vibracao: 'mm/s', temperatura: '°C', corrente: 'A' };
 const agora = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
@@ -14,7 +13,7 @@ export default function Medicoes() {
   const [maq, setMaq] = useState(''), [g, setG] = useState('vibracao'), [valor, setValor] = useState(''), [data, setData] = useState(''), [obs, setObs] = useState(''), [env, setEnv] = useState(false);
   const maqs = useLoad(() => api.maquinas({ ordem: 'codigo' }));
   useEffect(() => { setData(agora()); }, []);
-  useEffect(() => { if (maqs.data && !maq) setMaq(param('maquina') || maqs.data[0].id); }, [maqs.data, maq]);
+  useEffect(() => { if (maqs.data?.length && !maq) setMaq(param('maquina') || maqs.data[0].id); }, [maqs.data, maq]);
   const serie = useLoad(() => maq ? api.serie(maq, g) : Promise.resolve(null), [maq, g]);
   const tab = useLoad(() => api.medicoes({ limite: 8 }));
 
