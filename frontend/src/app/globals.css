@@ -387,3 +387,39 @@ html{scroll-behavior:smooth}
 @media(max-width:991px){.lp-passos,.lp-extras,.lp-equipe{grid-template-columns:1fr 1fr}.lp-duo{grid-template-columns:1fr;gap:1rem}.lp-duo h2{margin-bottom:.5rem}}
 @media(max-width:767px){.lp-nav nav{display:none}.lp-nav .btn{margin-left:auto}.lp-recursos,.lp-perfis{grid-template-columns:1fr}}
 @media(max-width:520px){.lp-passos,.lp-extras,.lp-equipe{grid-template-columns:1fr}.lp-kan{grid-template-columns:1fr 1fr}.lp-rec-vis{height:auto;min-height:170px}}
+
+/* ---------- Página inicial: tema escuro, no mesmo tom do topo ---------- */
+.pm-login-r{background:#14161b}
+.lp{--lp-bg:var(--pm-side);--lp-bg2:#14161b;--lp-card:#23272f;--lp-borda:#323844;--lp-texto:#b9c0cc;--lp-fraco:#8b93a3;background:var(--lp-bg);color:#fff}
+.lp-claro{background:var(--lp-bg2)}
+.lp h2,.lp h3{color:#fff}
+.lp p{color:var(--lp-texto)}
+.lp-kick{color:var(--lp-fraco)}
+.lp-passos li{border-top-color:var(--lp-borda)}
+.lp-passos li span{color:var(--pm-ink)}
+.lp-rec,.lp-perfis>div,.lp-equipe li{background:var(--lp-card);border-color:var(--lp-borda)}
+.lp-perfis>div{border-top-color:var(--pm-yellow)}
+.lp-rec-vis{background:var(--lp-bg2)}
+.lp-pt{fill:#fff}
+.lp-lim{stroke:#e5533f}
+.lp-lim-t,.lp-falha-t{fill:#ff8a7a}
+.lp-falha{fill:#e5533f;stroke:var(--lp-bg2)}
+.lp-eixo{fill:var(--lp-fraco)}
+.lp-kan>div{background:var(--lp-card);border-color:var(--lp-borda)}
+.lp-kan small{color:var(--lp-fraco)}
+.lp .lp-kan p{background:#2d323c;color:#e6e9ef}
+.lp-orc>div{background:rgba(46,160,100,.18)}
+.lp-orc>div.x{background:rgba(229,83,63,.2)}
+.lp-orc small{color:var(--lp-texto)}
+.lp-orc b{color:#fff}
+.lp .lp-orc p{color:#fff}
+.lp-tl::before{background:var(--lp-borda)}
+.lp-tl li{color:var(--lp-fraco)}
+.lp-tl li::before{background:var(--lp-bg2);border-color:var(--lp-borda)}
+.lp-tl li.done,.lp-tl li.now{color:#fff}
+.lp-tl li.done::before{background:#fff;border-color:#fff}
+.lp-tl li.now::before{background:var(--pm-yellow);border-color:var(--pm-yellow)}
+.lp-equipe span{background:var(--pm-yellow);color:var(--pm-ink)}
+.lp-equipe small,.lp-stack{color:var(--lp-fraco)}
+.lp-cta h2{color:var(--pm-ink)}
+.lp-rodape{background:#0f1114;border-top:1px solid #23272f}
