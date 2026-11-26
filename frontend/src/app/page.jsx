@@ -75,7 +75,7 @@ export default function Login() {
     <>
     <header className="lp-nav">
       <a href="#entrar" className="lp-nav-logo"><img src="/mantech-logo.png" alt="Mantech · PredictMaint" /></a>
-      <nav aria-label="Seções da página"><a href="#como-funciona">Como funciona</a><a href="#recursos">Recursos</a><a href="#perfis">Perfis</a></nav>
+      <nav aria-label="Seções da página"><a href="#como-funciona">Como funciona</a><a href="#recursos">Recursos</a><a href="#equipe">Equipe</a></nav>
       <a href="#entrar" className="btn btn-primary btn-sm">Entrar</a>
     </header>
     <div className="pm-login" id="entrar">
