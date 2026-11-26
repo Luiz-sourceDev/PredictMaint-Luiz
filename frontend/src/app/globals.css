@@ -389,7 +389,6 @@ html{scroll-behavior:smooth}
 @media(max-width:520px){.lp-passos,.lp-extras,.lp-equipe{grid-template-columns:1fr}.lp-kan{grid-template-columns:1fr 1fr}.lp-rec-vis{height:auto;min-height:170px}}
 
 /* ---------- Página inicial: tema escuro, no mesmo tom do topo ---------- */
-.pm-login-r{background:#14161b}
 .lp{--lp-bg:var(--pm-side);--lp-bg2:#14161b;--lp-card:#23272f;--lp-borda:#323844;--lp-texto:#b9c0cc;--lp-fraco:#8b93a3;background:var(--lp-bg);color:#fff}
 .lp-claro{background:var(--lp-bg2)}
 .lp h2,.lp h3{color:#fff}
