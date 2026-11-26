@@ -56,14 +56,6 @@ const PERFIS = [
   ['Funcionário', 'Abre chamados com foto e acompanha o atendimento, sem acesso às telas de gestão.'],
 ];
 
-const EQUIPE = [
-  ['Gustavo Batista', 'Gerente de projeto e back-end'],
-  ['Nicole Hanai Hatakeyama', 'Back-end'],
-  ['Leonardo Ferreira Virginio', 'Front-end'],
-  ['Luiz Fillipe Santana dos Reis', 'Banco de dados'],
-];
-const iniciais = n => n.split(' ').filter((_, i, a) => i === 0 || i === a.length - 1).map(p => p[0]).join('');
-
 export default function Landing() {
   return (
     <div className="lp">
@@ -102,15 +94,6 @@ export default function Landing() {
           <p className="lp-kick">Para cada pessoa</p>
           <h2>Cada perfil vê o que precisa.</h2>
           <div className="lp-perfis">{PERFIS.map(([t, d]) => <div key={t}><h3>{t}</h3><p>{d}</p></div>)}</div>
-        </div>
-      </section>
-
-      <section className="lp-sec lp-claro" id="equipe">
-        <div className="lp-wrap">
-          <p className="lp-kick">Quem faz</p>
-          <h2>Equipe Mantech Solutions</h2>
-          <ul className="lp-equipe">{EQUIPE.map(([n, p]) => <li key={n}><span aria-hidden="true">{iniciais(n)}</span><b>{n}</b><small>{p}</small></li>)}</ul>
-          <p className="lp-stack">Next.js · React · Node.js · Express · MySQL · Docker</p>
         </div>
       </section>
 
